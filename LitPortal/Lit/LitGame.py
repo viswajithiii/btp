@@ -80,15 +80,17 @@ class LitGame:
     def getCompletedPlayers(self):
         return [i for i in range(len(self.players)) if self.players[i].hasCompleted()]
 
-    def startGame(self):
+    def initializeGame(self):
         self.distributeCards()
         self.printCards()
-
-        turn = random.randint(0,len(self.players)-1) #Initial turn goes to a random player
+        self.turn = random.randint(0,len(self.players)-1  #Initial turn goes to a random player
         self.initialiseTeamScores()
         self.playhistory = []
 
-        while not self.isGameOver():
+    def playnextMove(self):
+
+
+        if not self.isGameOver():
             print 'Number of moves: ', len(self.playhistory)
 
             #Ask everyone if they'd like to put down a set
@@ -98,17 +100,19 @@ class LitGame:
                     if self.verifySetWon(player.team, setno):
                         self.setstatus[setno] = player.team 
                         self.teamscores[player.team] += (6 if setno%2 == 0 else 7)
-                        turn = player_i
+                        self.turn = player_i
 
-            if self.players[turn].hasCompleted():
-                turn = random.choice(self.getCompletedPlayers())
+            if self.players[self.turn].hasCompleted():
+                self.turn = random.choice(self.getCompletedPlayers())
 
-            (target,card) = self.players[turn].getQuery()
+            (target,card) = self.players[self.turn].getQuery()
 
             if target.hasCard(card):
                 target.removeCard(card)
-                self.players[turn].addCard(card)                
-                self.playhistory.append(LitPlay(self.players[turn],target,card,True))
+                self.players[self.turn].addCard(card)                
+                self.playhistory.append(LitPlay(self.players[self.turn],target,card,True))
             else:
-                self.playhistory.append(LitPlay(self.players[turn],target,card,False))
-                turn = self.players.index(target)
+                self.playhistory.append(LitPlay(self.players[self.turn],target,card,False))
+                self.turn = self.players.index(target)
+        else:
+            print 'GAME OVER!'
