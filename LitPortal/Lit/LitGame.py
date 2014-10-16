@@ -80,14 +80,20 @@ class LitGame:
     def getCompletedPlayers(self):
         return [i for i in range(len(self.players)) if self.players[i].hasCompleted()]
 
+    def getAllCards(self):
+        toreturn = []
+        for p in self.players:
+            toreturn.append(p.getAllCards())
+        return toreturn
+
     def initializeGame(self):
         self.distributeCards()
         self.printCards()
-        self.turn = random.randint(0,len(self.players)-1  #Initial turn goes to a random player
+        self.turn = random.randint(0,len(self.players)-1)  #Initial turn goes to a random player
         self.initialiseTeamScores()
         self.playhistory = []
 
-    def playnextMove(self):
+    def playNextMove(self):
 
 
         if not self.isGameOver():

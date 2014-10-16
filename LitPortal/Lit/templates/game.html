@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-     <meta charset="utf-8">
+    <head> <meta charset="utf-8">
         <title>Welcome to Literature!</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="">
@@ -17,8 +16,7 @@
 
             /* Custom container */
             .container-narrow {
-                margin: 0 auto;
-                max-width: 700px;
+                margin: 0 auto; max-width: 700px;
             }
             .container-narrow > hr {
                 margin: 30px 0;
@@ -41,11 +39,68 @@
     </head>
 
     <body>
+
         <div class="container">
-        <h3> How many players? </h3>
-        <a href="/play4">Four</a> or  <a href="/play6">Six</a>
+        <div class="span4 offset4"><h2> Literature Game </h2></div>
         </div>
-       <!-- Le javascript
+        <div class="container">
+        <div class="row-fluid">
+        <div class="span4 offset5"><h4>Game Status</h4></div>
+        </div>
+        <table class="table table-striped">
+        <thead>
+        <tr>
+        {% for s in setnamelist %}
+        <td><b> {{s}}</b> </td> 
+        {% endfor %}
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+        {% for s in setstatuslist%}
+        <td> {{s}} </td> 
+        {% endfor %}
+        </tr>
+        </tbody>
+        </table>
+        </div>
+        <div class="row-fluid">
+        <button class="btn btn-large btn-primary offset5"><a href="?next_move=1" style="color:white">Next Move</a></button>
+        </div>
+        <div class="row-fluid">
+        <div class="span4 offset5"><h4>It is now player {{turn}}'s turn.</h4></div>
+        </div>
+        <div class="container">
+        <div class="span4 offset5"><h4>Hands</h4></div>
+        <table class="table table-striped">
+        <thead>
+        <tr>
+        <td> Player </td>
+        <td> Team </td>
+        <td> Hand</td>
+        </tr>
+        </thead>
+        <tbody>
+        {% for player in playercardlist %} 
+        <tr>
+        <td>
+        {{ player.0.uid }} 
+        </td>
+        <td>
+        {{player.0.team }}
+        </td>
+        <td>
+        {% for card in player.1 %}
+
+        <img src="{{card}}" height="150" width="50">
+        {% endfor %}
+        </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+        </table>
+        </div>
+      <!-- Le javascript
         ================================================== -->
         <!-- Placed at the end of the document so the pages load faster -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" ></script>

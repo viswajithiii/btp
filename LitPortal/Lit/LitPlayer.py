@@ -24,6 +24,12 @@ class LitPlayer:
             insert_i += 1
         self.cards[set_i].insert(insert_i,newcard)
 
+    def getAllCards(self):
+
+        toreturn = []
+        for s in self.cards:
+            toreturn.extend(s)
+        return toreturn
 
     def printCards(self):
         print 'Player ',self.uid,' has ',sum([len(s) for s in self.cards]), ' cards.'
