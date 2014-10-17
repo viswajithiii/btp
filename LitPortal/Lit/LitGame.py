@@ -98,14 +98,19 @@ class LitGame:
 
         if not self.isGameOver():
             print 'Number of moves: ', len(self.playhistory)
+            if len(self.playhistory) % 100000 == 0:
+                self.printCards()
+                raw_input()
+            print self.teamscores
 
             #Ask everyone if they'd like to put down a set
             for (player_i,player) in enumerate(self.players):
                 setno = player.putDownSet()
                 if setno is not None:
                     if self.verifySetWon(player.team, setno):
+                        player.cards[setno] = [] #TODO - Quick fix.
                         self.setstatus[setno] = player.team 
-                        self.teamscores[player.team] += (6 if setno%2 == 0 else 7)
+                        self.teamscores[player.team] += (5 if setno%2 == 0 else 10)
                         self.turn = player_i
 
             if self.players[self.turn].hasCompleted():

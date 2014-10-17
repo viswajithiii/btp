@@ -64,6 +64,14 @@
         </tbody>
         </table>
         </div>
+        <div class="container">
+        {% if recentmovelist %}
+        <div class="offset5"><h5> Recent Moves </h5></div>
+        {% for move in recentmovelist %}
+        <div class="row-fluid">{{ move }}</div>
+        {% endfor %}
+        {% endif %}
+        </div>
         <div class="row-fluid">
         <button class="btn btn-large btn-primary offset5"><a href="?next_move=1" style="color:white">Next Move</a></button>
         </div>

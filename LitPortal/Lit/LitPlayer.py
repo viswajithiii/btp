@@ -68,8 +68,12 @@ class LitPlayer:
     def hasCompleted(self):
         return sum([len(s) for s in self.cards]) == 0
 
+    def getTotalCardCount(self):
+        return sum([len(s) for s in self.cards])
+
     def getQuery(self):
 
+        assert self.putDownSet() is None
         setsinhand = [i for i in range(len(self.cards)) if len(self.cards[i]) > 0]
         settoask = random.choice(setsinhand)
 

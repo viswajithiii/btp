@@ -34,8 +34,9 @@ def startgame(request,n_players):
             if p.result == True:
                 currstring += " Success."
             else:
-                currstring+= " Failure."
+                currstring += " Failure."
             toreturn.append(currstring)
+            n += 1
         return toreturn
 
     global litgame
@@ -44,7 +45,7 @@ def startgame(request,n_players):
         litgame = LitGame(int(n_players))
         litgame.initializeGame()
 
-    if request.GET["next_move"] == "1":
+    if "next_move" in request.GET.keys():
         litgame.playNextMove()
 
     cardlists = get_card_image_urls(litgame.getAllCards())
