@@ -10,12 +10,12 @@ class LitPlayer:
         self.uid = uid
         self.team = team
         self.cards = []
-        for i in range(8):
+        for i in range(self.litgame.n_sets):
             self.cards.append([])
 
     def addCard(self,newcard):
 
-        assert len(self.cards) == 8
+        assert len(self.cards) == self.litgame.n_sets
         set_i = self.litgame.getSetFromCard(newcard)
         insert_i = 0
         for card in self.cards[set_i]:

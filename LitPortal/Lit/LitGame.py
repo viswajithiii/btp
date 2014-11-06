@@ -8,21 +8,26 @@ class LitGame:
     A class for a particular game of Literature.
     """
 
-    def __init__(self, n_players = 4, config = "default"):
+    def __init__(self, n_players = 4, n_sets = 8):
+
+
+        self.n_sets = n_sets
 
         self.players = [] #Should be a list of LitPlayer elements.
         for i in range(n_players):
             self.players.append(LitPlayer(self,i,i%2))
 
-        self.config = config
-        if self.config == "default":
-            self.setnames = ["Clubs Minor", "Clubs Major", "Diamonds Minor", "Diamonds Major", "Hearts Minor", "Hearts Major", "Spades Minor", "Spades Major"]
+
+        setnames = ["Clubs Minor", "Clubs Major", "Diamonds Minor", "Diamonds Major", "Hearts Minor", "Hearts Major", "Spades Minor", "Spades Major"]
+        self.setnames = []
+        for i in range(n_sets):
+            self.setnames.append(setnames[i])
 
         #The won/lost/inplay status of each set
         #-1 if it's still in play.
         #else the number of the team that won it.
         self.setstatus = []
-        for i in range(8):
+        for i in range(n_sets):
             self.setstatus.append(-1)
 
     def getSetFromCard(self,card):
@@ -39,7 +44,7 @@ class LitGame:
     def distributeCards(self):
 
         cards = []
-        for suit in range(4):
+        for suit in range(self.n_sets/2):
             for value in range(13):
                 cards.append(Card(suit,value))
 
@@ -78,7 +83,7 @@ class LitGame:
         return realcount == targetcount
 
     def getCompletedPlayers(self):
-        return [i for i in range(len(self.players)) if self.players[i].hasCompleted()]
+        return [i for i in range(len(self.players)) if not self.players[i].hasCompleted()]
 
     def getAllCards(self):
         toreturn = []
@@ -97,7 +102,19 @@ class LitGame:
 
 
         if not self.isGameOver():
+
+            if self.players[self.turn].hasCompleted():
+                self.turn = random.choice(self.getCompletedPlayers())
+
             print 'Number of moves: ', len(self.playhistory)
+            toprint = []
+            for p in self.players:
+                toprint.append(sum([len(s) for s in p.cards]))
+            print toprint
+            if len(self.playhistory) % 10000 == 0:
+                self.printCards()
+                raw_input()
+
             #Ask everyone if they'd like to put down a set
             for (player_i,player) in enumerate(self.players):
                 setno = player.putDownSet()
@@ -107,6 +124,7 @@ class LitGame:
                         self.setstatus[setno] = player.team 
                         self.teamscores[player.team] += (5 if setno%2 == 0 else 10)
                         self.turn = player_i
+                        return
 
             (target,card) = self.players[self.turn].getQuery()
             self.doCardExchange(target,card)
@@ -124,5 +142,4 @@ class LitGame:
             self.playhistory.append(LitPlay(self.players[self.turn],target,card,False))
             self.turn = self.players.index(target)
 
-        if self.players[self.turn].hasCompleted():
-            self.turn = random.choice(self.getCompletedPlayers())
+
