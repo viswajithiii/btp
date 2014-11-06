@@ -98,11 +98,6 @@ class LitGame:
 
         if not self.isGameOver():
             print 'Number of moves: ', len(self.playhistory)
-            if len(self.playhistory) % 100000 == 0:
-                self.printCards()
-                raw_input()
-            print self.teamscores
-
             #Ask everyone if they'd like to put down a set
             for (player_i,player) in enumerate(self.players):
                 setno = player.putDownSet()
@@ -113,17 +108,21 @@ class LitGame:
                         self.teamscores[player.team] += (5 if setno%2 == 0 else 10)
                         self.turn = player_i
 
-            if self.players[self.turn].hasCompleted():
-                self.turn = random.choice(self.getCompletedPlayers())
-
             (target,card) = self.players[self.turn].getQuery()
+            self.doCardExchange(target,card)
 
-            if target.hasCard(card):
-                target.removeCard(card)
-                self.players[self.turn].addCard(card)                
-                self.playhistory.append(LitPlay(self.players[self.turn],target,card,True))
-            else:
-                self.playhistory.append(LitPlay(self.players[self.turn],target,card,False))
-                self.turn = self.players.index(target)
+
         else:
             print 'GAME OVER!'
+
+    def doCardExchange(self,target,card):
+        if target.hasCard(card):
+            target.removeCard(card)
+            self.players[self.turn].addCard(card)                
+            self.playhistory.append(LitPlay(self.players[self.turn],target,card,True))
+        else:
+            self.playhistory.append(LitPlay(self.players[self.turn],target,card,False))
+            self.turn = self.players.index(target)
+
+        if self.players[self.turn].hasCompleted():
+            self.turn = random.choice(self.getCompletedPlayers())

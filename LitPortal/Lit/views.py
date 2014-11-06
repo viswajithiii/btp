@@ -1,6 +1,8 @@
 from django.shortcuts import render, render_to_response
 from django.http import HttpResponse
+from django.template import RequestContext
 from LitGame import LitGame
+from Card import Card
 
 litgame = None
 
@@ -40,14 +42,23 @@ def startgame(request,n_players):
         return toreturn
 
     global litgame
+    print request.POST
+    print request.method
     #First move
-    if litgame is None:
+    if litgame is None or "reset" in request.GET.keys():
         litgame = LitGame(int(n_players))
         litgame.initializeGame()
 
-    if "next_move" in request.GET.keys():
+    if request.method=="GET" and "next_move" in request.GET.keys():
         litgame.playNextMove()
-
+    if "movetextbox" in request.POST.keys():
+        movestring = request.POST["movetextbox"].split() 
+        targettoplay = litgame.players[int(movestring[0])]
+        print 'HERE ',targettoplay.uid
+        suitdict = {"C":0,"D":1,"H":2,"S":3}
+        VALUES = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"]
+        cardtoplay=Card(suitdict[movestring[1][0]],VALUES.index(movestring[1][1]))
+        litgame.doCardExchange(targettoplay,cardtoplay)
     cardlists = get_card_image_urls(litgame.getAllCards())
     playercardlist = []
     for (p_i,cl) in enumerate(cardlists):
@@ -57,4 +68,4 @@ def startgame(request,n_players):
     turn = litgame.turn
     recentmovelist = get_recent_moves()
 
-    return render_to_response('game.html',locals())
+    return render_to_response('game.html',locals(),context_instance=RequestContext(request))
