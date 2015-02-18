@@ -13,3 +13,6 @@ class LitPlay:
         self.target = target
         self.card = card
         self.result = result
+
+    def __repr__(self):
+        return str(self.subject.uid) + " asked " + str(self.target.uid) + " for " + self.card.getName() + ". Success = " + str(self.result)

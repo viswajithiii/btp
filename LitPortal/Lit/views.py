@@ -24,7 +24,7 @@ def startgame(request,n_players):
             if s == -1:
                 toreturn.append("In play")
             else:
-                toreturn.append(s)
+                toreturn.append("Won by " + str(s))
         return toreturn
      
     def get_recent_moves(n = 5):
@@ -42,24 +42,27 @@ def startgame(request,n_players):
         return toreturn
 
     global litgame
-    print request.POST
-    print request.method
     #First move
     if litgame is None or "reset" in request.GET.keys():
-        litgame = LitGame(int(n_players))
+        litgame = LitGame(int(n_players),n_sets=2,verbose=False)
         litgame.initializeGame()
 
-    if request.method=="GET" and "next_move" in request.GET.keys():
-        litgame.playNextMove()
+    if request.method=="GET" and "next_move" in request.GET.keys() and request.GET["next_move"]=='1':
+#        print 'HERE'
+        if not litgame.isGameOver():
+            litgame.playNextMove()
+        else:
+            gameover = True
+
     if "movetextbox" in request.POST.keys():
         movestring = request.POST["movetextbox"].split() 
         targettoplay = litgame.players[int(movestring[0])]
-        print 'HERE ',targettoplay.uid
         suitdict = {"C":0,"D":1,"H":2,"S":3}
         VALUES = ["2","3","4","5","6","7","8","9","10","J","Q","K","A"]
-        cardtoplay=Card(suitdict[movestring[1][0]],VALUES.index(movestring[1][1]))
+        cardtoplay=litgame.getCard(suitdict[movestring[1][0]],VALUES.index(movestring[1][1]))
         litgame.doCardExchange(targettoplay,cardtoplay)
-    cardlists = get_card_image_urls(litgame.getAllCards())
+
+    cardlists = get_card_image_urls(litgame.getCardsByPlayer())
     playercardlist = []
     for (p_i,cl) in enumerate(cardlists):
         playercardlist.append((litgame.players[p_i],cl))

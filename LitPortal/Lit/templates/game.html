@@ -50,6 +50,9 @@
         <div class="row-fluid offset3">{{ move }}</div>
         {% endfor %}
         {% endif %}
+        {% if gameover %}
+        <h3 class="offset4"> GAME OVER! </h3>
+        {% endif %}
         </div>
         <div class="row-fluid">
         <button class="btn btn-large btn-primary offset3"><a href="?reset=1" style="color:white">Reset</a></button>
