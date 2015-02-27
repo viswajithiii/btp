@@ -118,14 +118,14 @@ class LitPEReasoner:
     def getUpperBound(self,player_uid,set_no):
         """The maximum number of cards of that set that player_uid can have."""
         p_info = self.playerinfos[self.litgame.players[player_uid]]
-        count_others = self.litgame.getSetTotalCount(setno) - len(self.player.cards[setno])
+        count_others = self.litgame.getSetTotalCount(set_no) - len(self.player.cards[set_no])
         for p in self.litgame.players:
             if p.uid == self.player.uid or p.uid == player_uid:
                 continue
             count_others -= self.getLowerBound(p.uid,set_no)
         
         count_player = self.litgame.players[player_uid].getTotalCardCount()
-        for (set_i,lb) in p_info.lower_bounds:
+        for (set_i,lb) in enumerate(p_info.lower_bounds):
             if set_i == set_no:
                 continue
             count_player -= lb
@@ -314,8 +314,29 @@ class CardProbabilisticInfo:
                     return False
             return True
         
+    
+    def updatePvals(self):
+        """Performs the probability update."""
+        possible_owners = []
+        for (pval_i,pval) in enumerate(self.pvals):
+            if pval > 0:
+                possible_owners.append(pval_i)
+        total_ub = 0
+        total_lb = 0
+        setno = self.reasoner.litgame.getSetFromCard(self.card)
+        for owner in possible_owners: 
+            total_lb += self.reasoner.getLowerBound(owner,setno)
+            total_ub += self.reasoner.getUpperBound(owner,setno)
+        Z = total_ub - total_lb
+
+        if Z > 0:
+            for owner in possible_owners:
+                self.pvals[owner] = self.reasoner.getLowerBound(owner,setno) + float(self.reasoner.getUpperBound(owner,setno) - self.reasoner.getLowerBound(owner,setno))/Z
+            self.normalizeProbabilities()
+
     def getLikeliestOpponent(self):
         """Returns the opponent who is likeliest to have this card."""
+
 
         #Sanity check.
         assert not self.isWithinTeam()
@@ -323,6 +344,7 @@ class CardProbabilisticInfo:
         if self.confirmed:
             return self.owner
 
+        self.updatePvals()
         max_pval = -1.0
         max_i = -1
         for (opp_i,opponent) in enumerate(self.reasoner.opponents):
